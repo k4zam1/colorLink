@@ -7,6 +7,13 @@ class GameBoard {
         this.isSelecting = false;
         this.canvas = canvas;
         this.lines = [];
+        this.startTime = new Date().getTime();
+
+        // パイプの状態一覧(a~o)
+        this.states = [];
+        for(var c="a".charCodeAt(0);c<="o".charCodeAt(0);c++){
+            this.states.push(String.fromCharCode(c));
+        }
 
         // click時の情報格納用
         this.clicked1 = {tile:null,row:null,col:null};
@@ -57,13 +64,11 @@ class GameBoard {
         // 列が同じ
         if(clicked1.col === clicked2.col){
             // clicked1がclicked2の左側
+            var start = clicked2.row+1;
+            var end = clicked1.row;
             if(clicked1.row < clicked2.row){
                 var start = clicked1.row+1;
                 var end = clicked2.row;
-            }
-            else {
-                var start = clicked2.row+1;
-                var end = clicked1.row;
             }
             for(var r=start;r<end;r++){
                 var tile = this.tiles[clicked1.col][r];
@@ -76,13 +81,11 @@ class GameBoard {
         }
         // 行が同じ
         else if(clicked1.row === clicked2.row){
+            var start = clicked2.col+1;
+            var end = clicked1.col;
             if(clicked1.col < clicked2.col){
                 var start = clicked1.col+1;
                 var end = clicked2.col;
-            }
-            else {
-                var start = clicked2.col+1;
-                var end = clicked1.col;
             }
             for(var c=start;c<end;c++){
                 var tile = this.tiles[c][clicked1.row];
@@ -141,86 +144,36 @@ class GameBoard {
             this.clicked2.tile = null;
             this.isSelecting = false;
 
-            if(this.__gameClear()){
+            // game clear
+            if(true){
                 context.font = "60px serif";
-                context.fillStyle = "red";
-                context.fillText("CLEAR!",200,200);
+                context.fillStyle = "white";
+                context.fillText("CLEAR!",170,200);
+                var elapsed = new Date().getTime() - this.startTime;
+                context.fillText("TIME :{}s".format(elapsed/1000),170,260);
             }
         }
     }
 
     __getMapInfo(){
         var getPipeInfo = function(pipe){
-            if(!pipe.top && !pipe.bottom && !pipe.left && !pipe.right){
-                return "a";
+            var state = 0;
+            var pipeStates = pipe.getStates();
+            for(var [i,s] of pipeStates.entries()){
+                state += s*Math.pow(2,i);
             }
-            else if(pipe.top && !pipe.bottom && !pipe.left && !pipe.right){
-                return "b";
-            }
-            else if(!pipe.top && pipe.bottom && !pipe.left && !pipe.right){
-                return "c";
-            }
-            else if(!pipe.top && !pipe.bottom && pipe.left && !pipe.right){
-                return "d";
-            }
-            else if(!pipe.top && !pipe.bottom && !pipe.left && pipe.right){
-                return "d";
-            }
-            else if(pipe.top && pipe.bottom && !pipe.left && !pipe.right){
-                return "e";
-            }
-            else if(pipe.top && !pipe.bottom && pipe.left && !pipe.right){
-                return "f";
-            }
-            else if(pipe.top && !pipe.bottom && !pipe.left && pipe.right){
-                return "g";
-            }
-            else if(!pipe.top && pipe.bottom && pipe.left && !pipe.right){
-                return "h";
-            }
-            else if(!pipe.top && pipe.bottom && !pipe.left && pipe.right){
-                return "i";
-            }
-            else if(!pipe.top && !pipe.bottom && pipe.left && pipe.right){
-                return "j";
-            }
-            else if(pipe.top && pipe.bottom && pipe.left && !pipe.right){
-                return "k";
-            }
-            else if(pipe.top && pipe.bottom && !pipe.left && pipe.right){
-                return "l";
-            }
-            else if(pipe.top && !pipe.bottom && pipe.left && pipe.right){
-                return "m";
-            }
-            else if(!pipe.top && pipe.bottom && pipe.left && pipe.right){
-                return "n";
-            }
-            else{
-                return "o";
-            }
-        }
+            return this.states[state]
+        }.bind(this);
         var mapInfo = "";
         for(var i=0;i<this.hTileNum;i++){
             for(var j=0;j<this.wTileNum;j++){
-                if(this.tiles[i][j] instanceof Pipe){
-                    mapInfo += getPipeInfo(this.tiles[i][j]);
-                }
-                else {
-                    mapInfo += "■";
-                }
+                mapInfo += (this.tiles[i][j] instanceof Pipe ? getPipeInfo(this.tiles[i][j]) : "■");
             }
             mapInfo += ",";
         }
+        // 最後の","を取り除く
         mapInfo = mapInfo.slice(0,-1);
         return mapInfo;
-    }
-
-    __gameClear(){
-        if(this.__getMapInfo() === this.answer){
-            return true;
-        }
-        return false;
     }
 
     __onBoard(posX,posY,callback){

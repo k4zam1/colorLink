@@ -127,6 +127,15 @@ class Pipe {
             callback();
         }
     }
+
+    getStates(){
+        var states = [];
+        states.push(this.top);
+        states.push(this.bottom);
+        states.push(this.left);
+        states.push(this.right);
+        return states;
+    }
 }
 
 class Tile {

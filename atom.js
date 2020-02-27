@@ -50,7 +50,6 @@ var maps = [
             [1,0,0,0,0,0,0]
         ],
         answer:
-            "■eeeeeg,■eeeegj,ieee■jj,j■iegjj,jjj■j■j,jjjjjif,■jjjjj■,■f■jjjj,■eef■■j,■eeeeef"
+            "■dddddj,■ddddjm,kddd■mm,m■kdjmm,mmm■m■m,mmmmmkf,■mmmmm■,■f■mmmm,■ddf■■m,■dddddf"
     }
-
 ]
