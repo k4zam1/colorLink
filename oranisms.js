@@ -145,7 +145,7 @@ class GameBoard {
             this.isSelecting = false;
 
             // game clear
-            if(true){
+            if(this.__getMapInfo() === this.answer){
                 context.font = "60px serif";
                 context.fillStyle = "white";
                 context.fillText("CLEAR!",170,200);
